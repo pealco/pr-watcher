@@ -1,0 +1,42 @@
+# pr-watcher.conf — configuration for pr-watcher daemon
+# Copy this file and edit:
+#   cp pr-watcher.conf.example pr-watcher.conf
+
+# GitHub repository (owner/repo) — REQUIRED
+REPO=
+
+# Path to local clone of the repository — REQUIRED
+REPO_DIR=
+
+# Path to Claude Code CLI
+CLAUDE_BIN=claude
+
+# Claude model for workers
+REVIEW_MODEL=sonnet
+
+# Maximum parallel workers
+MAX_PARALLEL=3
+
+# Seconds between polls
+POLL_INTERVAL=60
+
+# Maximum seconds per worker before kill
+WORKER_TIMEOUT=1800
+
+# Maximum retry attempts per worker type per PR
+MAX_RETRY=20
+
+# Log file
+LOG_FILE=$HOME/.pr-watcher.log
+
+# State directory (tracks which PRs have been processed)
+STATE_DIR=$HOME/.pr-watcher-state
+
+# Log rotation threshold in bytes (10 MB)
+LOG_MAX_BYTES=10485760
+
+# Reconciliation interval in seconds (5 min)
+RECONCILE_INTERVAL=300
+
+# Days to keep state files for closed PRs
+DONE_STALE_DAYS=7
