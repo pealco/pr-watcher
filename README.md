@@ -6,28 +6,15 @@ Runs as a macOS launchd daemon, polling every 60 seconds.
 
 ## How it works
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    pr-watcher daemon                     │
-│                                                         │
-│  Poll GitHub ──► For each open PR:                      │
-│                                                         │
-│  Phase 1: Review                                        │
-│    No review yet? → Launch Claude Code review worker    │
-│    Posts findings as PR comment, labels review-complete  │
-│                                                         │
-│  Phase 2: Post-review maintenance                       │
-│    2a. Merge conflicts?   → Claude rebases onto main    │
-│    2b. Unresolved comments? → Claude addresses them     │
-│    2c. CI failing?        → Claude reads logs & fixes   │
-│    2d. All clear?         → Labels ready-to-merge       │
-│                                                         │
-│  Reconciliation (every 5 min):                          │
-│    Clean orphaned labels, stale worktrees, old state    │
-└─────────────────────────────────────────────────────────┘
-```
+The daemon polls GitHub every 60 seconds and runs each open PR through a pipeline:
 
-Each worker runs Claude Code in an isolated git worktree with `--permission-mode bypassPermissions`, so it can read files, edit code, run commands, and push — fully autonomous.
+1. **Review** — Claude reads the diff, posts findings as a PR comment, labels `review-complete`
+2. **Deconflict** — If the PR has merge conflicts, Claude rebases onto main
+3. **Address comments** — If reviewers left unresolved comments, Claude fixes or responds
+4. **Fix CI** — If checks are failing, Claude reads the logs and pushes fixes
+5. **Ready** — When everything is green, labels `ready-to-merge`
+
+Each worker runs Claude Code in an isolated git worktree with `--permission-mode bypassPermissions`, so it can read files, edit code, run commands, and push — fully autonomous. A reconciliation pass every 5 minutes cleans up orphaned labels, stale worktrees, and old state.
 
 ## Prerequisites
 
